@@ -1,8 +1,3 @@
-			   /*******************************************
-			    * Menu using the arrow keys from keyboard *
-				*      By: Osama Farah . Amman-Jordan     *
-				*         osama_f2005@hotmail.com         *
-			    *******************************************/
 //-----------------------------------------------------------------------------------------------
 #include <iostream>
 #include <string>
