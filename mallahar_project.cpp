@@ -8,9 +8,8 @@
 class reserve
 {
 public:
-	string name;
-	int people;
-	string timeOfReservation;
+	string name,timeOfDay;
+	int people,timeOfReservation, hourOfReservation, minuteOfReservation;
 };
 
 class input
@@ -23,11 +22,9 @@ public:
 
 void userMenu ();
 
-void adminMenu ();
+int admin_arrows ();
 
 void modifyAccount ();
-
-void deleteAccount ();
 
 void reservation ();
 
@@ -46,6 +43,8 @@ void delete_User_Account();
 void delete_admin_account();
 
 string * MenuItems(); // a function that returns the name of a menu item.
+
+string * adminItems(); // a function that returns the name of a menu item.
 
 void gotoxy(int,int); // by this function you can goto any position on the cmd line screen.
 
@@ -68,7 +67,7 @@ int main()
 	typedef void (*TMenuOption)(); // typedef for defining a 'pointer to function' type.
 
 	int ItemCount=4; // This variable holds the number of menu items.
-	int MenuChoice=1; // This variable holds the position of the cursor. 
+	int MenuChoice=1; // This variable holds the position of the cursor.
 	char key; //for entering the key (up arrow,down arrow,etc...);
 
 	TMenuOption *MenuOption=new TMenuOption[ItemCount];//array of pointers to functions (dynamic).
@@ -81,7 +80,7 @@ int main()
 	{
 		for (int i=0;i<ItemCount;i++) // Draw the menu.
 		{
-			gotoxy(3,2+i);
+			gotoxy(3,3+i);
 			MenuChoice==i+1 ? cout<<" -> " : cout<<"    "; // if (i+1) == the cursor then
 			                                               //    print ' -> ' else print '    '.
 			                                               //    by the way i call '->' the cursor
@@ -120,7 +119,7 @@ int main()
 			break;
 
 		case 'H': // same but with 'down arrow' and decrement the cursor.
-			MenuChoice--; 
+			MenuChoice--;
 			if (MenuChoice<1)
 				MenuChoice=ItemCount;
 			break;
@@ -150,17 +149,17 @@ int main()
 string * MenuItems() // this function returns a pointer to a string.
 {
 	string *item=new string[4];
-	item[0]="1.create account.";
-	item[1]="2.login.";
-	item[2]="3.help.";
-	item[3]="Exit.";
+	item[0]="create account";
+	item[1]="login";
+	item[2]="help";
+	item[3]="Exit";
 
 	return item;
 }
 void gotoxy(int xpos, int ypos)  // just take this function as it is.
 {
-	COORD scrn;    
-	HANDLE hOuput = GetStdHandle(STD_OUTPUT_HANDLE); 
+	COORD scrn;
+	HANDLE hOuput = GetStdHandle(STD_OUTPUT_HANDLE);
 	scrn.X = xpos; scrn.Y = ypos;
 	SetConsoleCursorPosition(hOuput,scrn);
 }
@@ -179,7 +178,7 @@ void ChangeCursorStatus(bool Visible)
 		c->bVisible=FALSE;
 		c->dwSize=1;//it must be assigned to a valid value
 	}
-	
+
 	SetConsoleCursorInfo(h,c);
 }
 void createAccount ()
@@ -254,7 +253,7 @@ void createAccount ()
 void logIn ()
 {
 	input login_info;
-	
+
 
 	system("cls");
 	gotoxy(3,1);
@@ -297,6 +296,7 @@ void logIn ()
 			flag=1;
 		}
 	}
+
 	if(flag==1)
 	{
 		userMenu();
@@ -326,7 +326,7 @@ void logIn ()
 		}
 		if(x==1)
 		{
-			adminMenu();
+			admin_arrows();
 		}
 		else
 		{
@@ -337,6 +337,136 @@ void logIn ()
 	}
 	getch();
 	system("cls");
+}
+void gotoxy_1(int,int); // by this function you can goto any position on the cmd line screen.
+
+void ChangeCursorStatus_1(bool);
+
+int admin_arrows()
+{
+	system("cls");
+
+	ChangeCursorStatus_1(false);
+	typedef void (*TMenuOption)(); // typedef for defining a 'pointer to function' type.
+
+	int ItemCount=5; // This variable holds the number of menu items.
+	int adminChoice=1; // This variable holds the position of the cursor.
+	char key; //for entering the key (up arrow,down arrow,etc...);
+
+	TMenuOption *MenuOption=new TMenuOption[ItemCount];//array of pointers to functions (dynamic).
+	MenuOption[0]=createAccount; //filling the array with the functions.
+	MenuOption[1]=modifyAccount;
+	MenuOption[2]=delete_User_Account;
+	MenuOption[3]=delete_admin_account;
+	MenuOption[4]=userMenu;
+	MenuOption[5]=ExitOption;
+
+	while(1) //infinite loop. (this loop will not break that's why we need an exit function).
+	{
+		for (int i=0;i<ItemCount;i++) // Draw the menu.
+		{
+			gotoxy(3,3+i);
+			adminChoice==i+1 ? cout<<" -> " : cout<<"    "; // if (i+1) == the cursor then
+			                                               //    print ' -> ' else print '    '.
+			                                               //    by the way i call '->' the cursor
+			cout<<adminItems()[i]<<endl; // print the name of the item.
+		} // finish the drawing.
+
+		key=getch(); //get the key.
+
+		/*
+		   getch() is like cin>>bla;
+		   but the differance is that by 'cin' you can enter char,double,int,etc...
+		   with more than one digit and the value you entered is printed on the screen
+
+		   but with getch you can only enter ONE CHARACTER and will not be printed on
+		   the sceen and return the entered key to the variable 'key' in this case.
+		*/
+
+		switch (key) //check the entered key.
+		{
+		case '\r': // if the entered key is 'Enter'.
+			try
+			{
+				(*MenuOption[adminChoice-1])(); // call the function of the index 'cursor-1' in
+				                               //     the 'pointer to function' array.
+			}
+			catch(...)
+			{}  // we have to use try and catch coz if we did'nt fill that index with a function.
+				//                     a runtime error will appear.
+
+			break;
+
+		case 'P': // if the entered key is the 'up arrow' notice that its equal to 'P' (capital)
+			adminChoice++; //then we will increment the cursor by one.
+			if (adminChoice>ItemCount) // if the cursor value is more than the items count.
+				adminChoice=1;         //    then it will return back to the first item.
+			break;
+
+		case 'H': // same but with 'down arrow' and decrement the cursor.
+			adminChoice--;
+			if (adminChoice<1)
+				adminChoice=ItemCount;
+			break;
+
+		case 27: // 27 is the asscii to the escape key (Esc)
+			try {(*MenuOption[ItemCount-1])();} // useually when the 'Esc' key is pressed the last
+			                                    //     item will be called (executed). but you can
+			                                    //     change it to whatever you want.
+			catch(...){}
+			break;
+		default:// any another key.
+			if (key>='1' && key <=char(ItemCount+'0'))//check if the pressed key is in the range
+				                                      //    of (1,2,3,...,#of items) [all char(s)]
+			{
+				try {(*MenuOption[int(key)-'0'-1])();} //call the function of the pressed number.
+				     //  you can make the cursor move to that item instead of calling (executing)
+					 //  it by replacing all the code between 'if (bla){' and '}' with this
+				     //  statement MenuChooice=int(key)-'0'
+				catch(...){}
+			}
+		}
+	}
+
+	delete MenuOption;
+	return 0;
+}
+string * adminItems() // this function returns a pointer to a string.
+{
+	string *item=new string[6];
+	item[0]="Create Account";
+	item[1]="Modify Account";
+	item[2]="Delete User Account";
+	item[3]="Delete Admin Account";
+	item[4]="User menu";
+	item[5]="Exit";
+
+	return item;
+}
+void gotoxy_1(int xpos_1, int ypos_1)  // just take this function as it is.
+{
+	COORD scrn;
+	HANDLE hOuput = GetStdHandle(STD_OUTPUT_HANDLE);
+	scrn.X = xpos_1; scrn.Y = ypos_1;
+	SetConsoleCursorPosition(hOuput,scrn);
+}
+void ChangeCursorStatus_1(bool Visible)
+{
+	CONSOLE_CURSOR_INFO *c=new CONSOLE_CURSOR_INFO;
+	HANDLE h=GetStdHandle(STD_OUTPUT_HANDLE);
+
+	if (Visible)
+	{
+		c->bVisible=TRUE;
+		c->dwSize=0;//(0) is invild so the default value is set
+	}
+	else
+	{
+		c->bVisible=FALSE;
+		c->dwSize=1;//it must be assigned to a valid value
+	}
+
+	SetConsoleCursorInfo(h,c);
 }
 void userMenu ()
 {
@@ -378,11 +508,10 @@ void help()
 {
 	system("cls");
 	gotoxy(25,10);
-	cout<<"You have selected menu option (#3)"<<endl;
+	cout<<""<<endl;
 	getch();
 	system("cls");
 }
-
 void modifyAccount ()
 {
 	system ("cls");
@@ -440,46 +569,6 @@ void modifyAccount ()
 	delete_admin.close();
 	getch();
 }
-
-void adminMenu ()
-{
-	int option(0);
-
-	system("cls");
-
-	cout << "1. Create Account" << endl;
-	cout << "2. Modify Account" << endl;
-	cout << "3. Delete User Account" << endl;
-	cout << "4.	Delete Admin Account" << endl;
-	cout << "5. User Menu" << endl;
-
-	cout << endl << endl << "choice\t:";
-
-	cin >> option;
-
-	while (option < 1 || option > 5)
-	{
-		cout << "Invalid Input!" << endl;
-		cin >> option;
-	}
-	do
-	{
-		switch (option)
-		{
-		case 1:createAccount();
-			break;
-		case 2:modifyAccount();
-			break;
-		case 3:delete_User_Account();
-			break;
-		case 4:delete_admin_account();
-			break;
-		case 5:userMenu();
-			break;
-		}
-	}while(option!=5);
-
-}
 void delete_User_Account ()
 {
 	system ("cls");
@@ -495,7 +584,7 @@ void delete_User_Account ()
 	if(delete_user.is_open())
 	{
 		while(!delete_user.eof())
-		{	
+		{
 			i++;
 			delete_user >> email[i];
 			delete_user >> names[i];
@@ -505,10 +594,9 @@ void delete_User_Account ()
 		}
 
 	}
-	void delete_admin_account();
 	cout<<"\nwhich account would you like to delete:\t";
 	cin>>opt;
-	while(opt<1 ||opt>j)
+	while(opt<1 ||opt>i)
 	{
 		cout<<"error option is out of range\n";
 		cout<<"which account would you like to delete:\t";
@@ -522,6 +610,7 @@ void delete_User_Account ()
 	names[opt]=names[counter];
 	password[opt]=password[counter];
 	counter--;;
+
 
 	for(i=0;i<=counter;i++)
 	{
@@ -538,22 +627,22 @@ void delete_User_Account ()
 void delete_admin_account()
 {
 	int j=0;
-	string email[ACCOUNT],names[ACCOUNT],password[ACCOUNT]; 
+	string email[ACCOUNT],names[ACCOUNT],password[ACCOUNT];
 	ifstream delete_admin;
 	delete_admin.open("admin_account.txt");
 	cout<<"\temail\t\t\t"<<"names\t\t\t"<<"passwords\n\n";
-	
+
 	cout<<"\n"<<"admin accounts\n\n";
 	cout<<"\temail\t\t\t""names\t\t\t""passwords\n\n";
 	if(delete_admin.is_open())
 	{
 		while(!delete_admin.eof())
-		{	
+		{
 			j++;
 			delete_admin >> email[j];
 			delete_admin >> names[j];
 			delete_admin >> password[j];
-			
+
 			cout<<(j)<<"\t"<<email[j]<<"\t\t"<<names[j]<<"\t\t"<<password[j]<<endl;
 		}
 
@@ -627,9 +716,79 @@ void makeReservation ()
 
 void deleteReservation ()
 {
-	system ("cls");
+	reserve make[ACCOUNT];
+	string line, validation, temp;
+	int count(0), elements(0), i(0), opt(0), counter(0), deleteline;
 
+	system ("cls");
+	
 	cout << "Delete a Reservation" << endl << endl;
+
+	ifstream myfile;
+	myfile.open("ReservationTextFile.txt");
+
+	istringstream readInformation;
+		
+	if (myfile.is_open())
+	{
+		while (!myfile.eof() && i < ACCOUNT)
+		{
+			getline(myfile, temp);
+			
+			if (temp.size() == 0)
+				break;
+
+			readInformation = istringstream(temp);
+
+			readInformation >> validation;
+
+			if (validation != "$")
+			break;
+				
+			readInformation >> make[i].name;
+			readInformation >> make[i].hourOfReservation;
+			readInformation >> make[i].minuteOfReservation;
+			readInformation >> make[i].timeOfDay;
+			readInformation >> make[i].people;
+
+			cout << i << "\t" << make[i].name << "  " << make[i].hourOfReservation << ":" << make[i].minuteOfReservation
+			<< make[i].timeOfDay << "  " << make[i].people << endl;
+
+			i++;
+		}
+		elements = i;
+	}
+
+	cout << "Which line do you want to remove?" << endl;
+	cin >> deleteline;
+
+	myfile.close();
+
+	ofstream reservations;
+	reservations.open("ReservationTextFile.txt");
+
+	if (reservations.is_open())
+	{
+		for (i = 0; i < elements; i++)
+		{
+			if (i == deleteline)
+			{
+				continue;
+			}
+
+			reservations << "$ ";
+			reservations << make[i].name << " ";
+			reservations << make[i].hourOfReservation << " ";
+			reservations << make[i].minuteOfReservation << " ";
+			reservations << make[i].timeOfDay << " ";
+			reservations << make[i].people << endl;
+
+			cout << i << "\t" << make[i].name << "  " << make[i].hourOfReservation << ":" << make[i].minuteOfReservation
+			<< make[i].timeOfDay << "  " << make[i].people << endl;
+		}
+	}
+
+	reservations.close();
 
 	getch();
 }
