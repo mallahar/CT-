@@ -5,6 +5,7 @@
 #define ACCOUNT 50
 #define ESCAPE 27
 
+int cost=0;
 class reserve
 {
 public:
@@ -699,8 +700,8 @@ void makeReservation ()
 	cout << "Enter your name: " << endl;
 	cin >> make.name;
 
-	cout << "Enter the time you would like to book: " << endl;
-	cin >> make.timeOfReservation;
+//	cout << "Enter the time you would like to book: " << endl;
+//cin >> make.timeOfReservation;
 
 	cout << "Enter the number of people you are coming with: " << endl;
 	cin >> make.people;
@@ -709,6 +710,12 @@ void makeReservation ()
 	myfile << make.timeOfReservation << endl;
 	myfile << make.people << endl;
 
+	if(make.people<2){
+		cost=10;
+	}
+	else if(make.people>4){
+		cost=40;
+	}
 	myfile.close();
 
 	getch();
@@ -721,20 +728,20 @@ void deleteReservation ()
 	int count(0), elements(0), i(0), opt(0), counter(0), deleteline;
 
 	system ("cls");
-	
+
 	cout << "Delete a Reservation" << endl << endl;
 
 	ifstream myfile;
 	myfile.open("ReservationTextFile.txt");
 
 	istringstream readInformation;
-		
+
 	if (myfile.is_open())
 	{
 		while (!myfile.eof() && i < ACCOUNT)
 		{
 			getline(myfile, temp);
-			
+
 			if (temp.size() == 0)
 				break;
 
@@ -744,7 +751,7 @@ void deleteReservation ()
 
 			if (validation != "$")
 			break;
-				
+
 			readInformation >> make[i].name;
 			readInformation >> make[i].hourOfReservation;
 			readInformation >> make[i].minuteOfReservation;
@@ -795,6 +802,7 @@ void deleteReservation ()
 
 void changeReservation ()
 {
+	reserve make;
 	string name;
 	int timeOfReservation;
 	int people;
@@ -807,30 +815,28 @@ void changeReservation ()
 	myfile.open("ReservationTextFile.txt", ios::app);
 
 	cout << "Enter your name: " << endl;
-	cin >> name;
+	cin >> make.name;
 
-	myfile << name << "__";
+	myfile << make.name << "__";
 
-	cout << "Enter the time you would like to book: " << endl;
-	cin >> timeOfReservation;
+	//cout << "Enter the time you would like to book: " << endl;
+	//cin >> timeOfReservation;
 
-	myfile << timeOfReservation << "__";
+	/*myfile << make.timeOfReservation<< "__";*/
 
 	cout << "Enter the number of people you are coming with: " << endl;
-	cin >> people;
+	cin >> make.people;
 
-	myfile << people << endl;
+	myfile <<make.people << endl;
 
 	myfile.close();
-
-	getch();
 }
 
 void receipt ()
 {
 	system ("cls");
 
-	cout << "Receipt" << endl << endl;
+	cout << "Receipt"<<cost<< endl;
 
 	getch();
 }
